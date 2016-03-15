@@ -139,6 +139,11 @@ class Dog extends Animal implements Runnable {
     public void run() {
         for (Eatable toEat : toEats) {
             while (!this.isFull() && toEat.getRemainingAmount() != 0) {
+                try {
+                    Thread.currentThread().sleep(eatingSpeed);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 this.takeABite(toEat);
             }
         }

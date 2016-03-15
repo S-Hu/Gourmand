@@ -15,6 +15,11 @@ interface Eater {
      * @param toEat 被吃的对象
      */
     void takeABite(Eatable toEat);
+
+    /**
+     * @return 是否吃饱了
+     */
+    boolean isFull();
 }
 
 /**
@@ -95,6 +100,11 @@ public abstract class Animal implements Eater {
         //吃了多少
         this.stomach.fill(toEat.beEaten(toEatAmount));
     }
+
+    @Override
+    public boolean isFull() {
+        return this.stomach.getEmpty() == 0;
+    }
 }
 
 /**
@@ -128,7 +138,7 @@ class Dog extends Animal implements Runnable {
     @Override
     public void run() {
         for (Eatable toEat : toEats) {
-            while (this.stomach.getEmpty() != 0 && toEat.getRemainingAmount() != 0) {
+            while (!this.isFull() && toEat.getRemainingAmount() != 0) {
                 this.takeABite(toEat);
             }
         }

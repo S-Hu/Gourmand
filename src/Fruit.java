@@ -14,6 +14,11 @@ interface Eatable {
     double getRemainingAmount();
 
     /**
+     * @return if this eatable is clear.
+     */
+    boolean isClear();
+
+    /**
      * 被吃方法
      *
      * @param eatenAmount 将要被吃掉的量
@@ -33,6 +38,11 @@ public abstract class Fruit implements Eatable {
     @Override
     public double getRemainingAmount() {
         return remaining;
+    }
+
+    @Override
+    public boolean isClear() {
+        return this.getRemainingAmount() == 0;
     }
 
     @Override

@@ -1,30 +1,60 @@
 /**
  * Created by HuShunxin on 16/3/15.
  */
+
+/**
+ * Something can be eaten.
+ *
+ * @author HuShunxin
+ */
 interface Eatable {
-    void beEaten(double eatenPart);
+    /**
+     * @return remaining amount of this eatable.
+     */
+    double getRemainingAmount();
+
+    /**
+     * 被吃方法
+     *
+     * @param eatenAmount 将要被吃掉的量
+     * @return 确实被吃掉的量
+     */
+    double beEaten(double eatenAmount);
 }
 
-public abstract class Fruit {
+/**
+ * 水果类
+ *
+ * @author HuShunxin
+ */
+public abstract class Fruit implements Eatable {
     protected double remaining;
 
-    public double getRemaining() {
+    @Override
+    public double getRemainingAmount() {
         return remaining;
-    }
-}
-
-final class Watermelon extends Fruit implements Eatable {
-    public Watermelon() {
-        remaining = 100.0;
     }
 
     @Override
-    public void beEaten(double eatenPart) {
-        if (eatenPart > 0) {
-            if (remaining > eatenPart) {
-                remaining -= eatenPart;
-            } else remaining = 0;
-            //TODO:make noise
-        }
+    public double beEaten(double eatenAmount) {
+        if (eatenAmount > 0) {
+            if (remaining < eatenAmount) {
+                eatenAmount = remaining;
+            }
+            remaining -= eatenAmount;
+            //TODO:make some noise
+            return eatenAmount;
+        } else return 0;
+    }
+}
+
+/**
+ * 西瓜类
+ *
+ * @author HuShunxin
+ */
+final class Watermelon extends Fruit {
+    public Watermelon() {
+        remaining = 100.0;// + Math.random() * 20;
     }
 }

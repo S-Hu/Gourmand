@@ -23,16 +23,13 @@ public class GourmandMain {
     public GourmandMain() {
 
         resetGame();
-
-        resetButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                resetGame();
-            }
-        });
+        resetButton.addActionListener(e -> resetGame());
+        startButton.addActionListener(e -> startGame());
     }
 
     public void resetGame() {
+
+        competitionPanel.removeAll();
 
         for (int row = 1; row <= 8; row++) {
             for (int column = 1; column <= 6; column++) {
@@ -40,8 +37,6 @@ public class GourmandMain {
                 String imgPath = "resource/picture/watermelon/WTMelon" + String.valueOf(column) + ".jpg";
                 ImageIcon image = new ImageIcon(new ImageIcon(imgPath).getImage().getScaledInstance(frame.size.width, frame.size.height, Image.SCALE_DEFAULT));
                 JLabel label = new JLabel(image);
-                System.out.println(frame.size.width);
-                System.out.println(frame.size.height);
                 label.setLocation(frame.origin.x, frame.origin.y);
                 label.setSize(frame.size.width, frame.size.height);
                 competitionPanel.add(label);
@@ -64,6 +59,10 @@ public class GourmandMain {
         background.setSize(500, 400);
         competitionPanel.add(background);
 
+    }
+
+    public void startGame() {
+        
     }
 
     public static void main(String[] args) {

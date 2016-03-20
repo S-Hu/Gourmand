@@ -9,12 +9,13 @@
  * @author HuShunxin
  */
 interface Eater {
+
     /**
      * 吃一口方法
-     *
      * @param toEat 被吃的对象
+     * @return 实际吃了多少量
      */
-    void takeABite(Eatable toEat);
+    int takeABite(Eatable toEat);
 
     /**
      * @return 是否吃饱了
@@ -27,7 +28,7 @@ interface Eater {
  *
  * @author HuShunxin
  */
-public abstract class Animal implements Eater {
+public class Animal implements Eater, Runnable {
     /**
      * 胃类
      *
@@ -88,50 +89,39 @@ public abstract class Animal implements Eater {
     /**
      * 嚎叫方法(吃饱/吃完时嚎叫)
      */
-    public abstract void cry();
-
-    @Override
-    public void takeABite(Eatable toEat) {
-        //要吃多少
-        int toEatAmount = amountPerBite + (int) Math.floor(Math.random() * 2);
-        if (toEatAmount > this.stomach.getEmpty()) toEatAmount = this.stomach.getEmpty();
-        if (toEatAmount > toEat.getRemainingAmount()) toEatAmount = toEat.getRemainingAmount();
-
-        //吃了多少
-        this.stomach.fill(toEat.beEaten(toEatAmount));
+    public void cry() {
+        //TODO:bark
+        System.out.println("dog bark");
     }
 
-    @Override
-    public boolean isFull() {
-        return this.stomach.getEmpty() == 0;
-    }
-}
-
-/**
- * Dog: an example
- */
-class Dog extends Animal implements Runnable {
     //吃货任务序列
     private Eatable[] toEats;
-
     public Eatable[] getToEats() {
         return toEats;
     }
-
     public void setToEats(Eatable[] toEats) {
         this.toEats = toEats;
     }
 
-    public Dog() {
-        amountPerBite = 1;
-        eatingSpeed = 1000 + (int) (Math.random() - 0.5) * 200;
-        stomach = new Stomach(30);
+    public int tag;
+    public AnimalBehaviourDelegate delegate;
+
+    public Animal(Stomach stomach, int eatingSpeed, int amountPerBite, Eatable[] toEats, int tag, AnimalBehaviourDelegate delegate) {
+        this.stomach = stomach;
+        this.eatingSpeed = eatingSpeed;
+        this.amountPerBite = amountPerBite;
+        this.toEats = toEats;
+        this.tag = tag;
+        this.delegate = delegate;
     }
 
-    @Override
-    public void cry() {
-        //TODO:bark
-        System.out.println("dog bark");
+    public Animal(Eatable[] toEats, int tag, AnimalBehaviourDelegate delegate) {
+        amountPerBite = 1 + (int) (Math.random() * 2);
+        eatingSpeed = 1000 + (int) (Math.random() - 0.5) * 500;
+        stomach = new Stomach(50);
+        this.toEats = toEats;
+        this.tag = tag;
+        this.delegate = delegate;
     }
 
     //线程相关
@@ -144,10 +134,35 @@ class Dog extends Animal implements Runnable {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                this.takeABite(toEat);
+                int amount = this.takeABite(toEat);
+                if (toEat.isClear())
+                    delegate.didEatAFruit(this,(Fruit) toEat);
+                else
+                    delegate.didEatABite(this,(Fruit) toEat, toEat.getRemainingAmount());
             }
         }
         //叫一声
         this.cry();
+        this.delegate.didEndCompetition(this);
+        Thread.currentThread().interrupt();
+    }
+
+    @Override
+    public int takeABite(Eatable toEat) {
+        //要吃多少
+        int toEatAmount = amountPerBite + (int) Math.floor(Math.random() * 2);
+        if (toEatAmount > this.stomach.getEmpty()) toEatAmount = this.stomach.getEmpty();
+        if (toEatAmount > toEat.getRemainingAmount()) toEatAmount = toEat.getRemainingAmount();
+
+        //吃了多少
+        int realEatAmount = toEat.beEaten(toEatAmount);
+
+        System.out.println(toEat.getRemainingAmount());
+        return this.stomach.fill(realEatAmount);
+    }
+
+    @Override
+    public boolean isFull() {
+        return this.stomach.getEmpty() == 0;
     }
 }

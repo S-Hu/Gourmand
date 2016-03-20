@@ -58,6 +58,8 @@ public abstract class Fruit implements Eatable {
         else
             return 0;
     }
+
+    public int tag;
 }
 
 /**
@@ -66,7 +68,8 @@ public abstract class Fruit implements Eatable {
  * @author HuShunxin
  */
 final class Watermelon extends Fruit {
-    public Watermelon() {
-        remaining = 5;
+    public Watermelon(int tag) {
+        remaining = 8;
+        this.tag = tag;
     }
 }

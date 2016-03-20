@@ -37,22 +37,22 @@ public abstract class Animal implements Eater {
         /**
          * 肚量
          */
-        private double capacity;
+        private int capacity;
         /**
          * 已吃
          */
-        private double size;
+        private int nowEaten;
 
-        public Stomach(double capacity) {
+        public Stomach(int capacity) {
             this.capacity = capacity;
-            this.size = 0;
+            this.nowEaten = 0;
         }
 
         /**
          * @return 剩余可吃空间
          */
-        public double getEmpty() {
-            return capacity - size;
+        public int getEmpty() {
+            return capacity - nowEaten;
         }
 
         /**
@@ -61,12 +61,12 @@ public abstract class Animal implements Eater {
          * @param amount 要填进去的量
          * @return 确实填进去的量
          */
-        public double fill(double amount) {
+        public int fill(int amount) {
             if (amount > 0) {
                 if (amount >= getEmpty()) {
                     amount = getEmpty();
                 }
-                size += amount;
+                nowEaten += amount;
             } else amount = 0;
             return amount;
         }
@@ -83,7 +83,7 @@ public abstract class Animal implements Eater {
     /**
      * 每次吃的量
      */
-    protected double amountPerBite;
+    protected int amountPerBite;
 
     /**
      * 嚎叫方法(吃饱/吃完时嚎叫)
@@ -93,7 +93,7 @@ public abstract class Animal implements Eater {
     @Override
     public void takeABite(Eatable toEat) {
         //要吃多少
-        double toEatAmount = amountPerBite * (1 + 0.5 * Math.random());
+        int toEatAmount = amountPerBite + (int) Math.floor(Math.random() * 2);
         if (toEatAmount > this.stomach.getEmpty()) toEatAmount = this.stomach.getEmpty();
         if (toEatAmount > toEat.getRemainingAmount()) toEatAmount = toEat.getRemainingAmount();
 
@@ -123,9 +123,9 @@ class Dog extends Animal implements Runnable {
     }
 
     public Dog() {
-        amountPerBite = 10 + (Math.random() - 0.5) * 5;
+        amountPerBite = 1;
         eatingSpeed = 1000 + (int) (Math.random() - 0.5) * 200;
-        stomach = new Stomach(200 + (Math.random() - 0.5) * 100);
+        stomach = new Stomach(30);
     }
 
     @Override

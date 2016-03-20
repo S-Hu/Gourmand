@@ -31,12 +31,6 @@
               <text value="重置比赛"/>
             </properties>
           </component>
-          <component id="dd211" class="javax.swing.JButton" binding="button3" default-binding="true">
-            <constraints/>
-            <properties>
-              <text value="Button"/>
-            </properties>
-          </component>
         </children>
       </toolbar>
       <component id="3646f" class="BackgroundPanel" binding="competitionPanel" custom-create="true">

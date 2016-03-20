@@ -1,5 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.Player;
 
 /**
  * Created by ChenLetian on 3/20/16.
@@ -8,7 +14,6 @@ public class GourmandMain implements AnimalBehaviourDelegate {
     private JPanel mainPanel;
     private JButton startButton;
     private JButton resetButton;
-    private JButton button3;
     private BackgroundPanel competitionPanel;
 
     private JLabel[][] watermelonLabels = new JLabel[8][6];
@@ -77,6 +82,19 @@ public class GourmandMain implements AnimalBehaviourDelegate {
                 animal.run();
             }).start();
         }
+        new Thread(() -> {
+            while (true) {
+                try {
+                    BufferedInputStream buffer = new BufferedInputStream(new FileInputStream("resource/sound/eating.mp3"));
+                    Player player = new Player(buffer);
+                    player.play();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (JavaLayerException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -98,7 +116,15 @@ public class GourmandMain implements AnimalBehaviourDelegate {
     @Override
     public void didEndCompetition(Animal animal) {
         SwingUtilities.invokeLater(() -> {
-            animal.cry();
+            try {
+                BufferedInputStream buffer = new BufferedInputStream(new FileInputStream("resource/sound/" + animalNames[animal.tag] + ".mp3"));
+                Player player = new Player(buffer);
+                player.play();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (JavaLayerException e) {
+                e.printStackTrace();
+            }
         });
     }
 
@@ -112,7 +138,6 @@ public class GourmandMain implements AnimalBehaviourDelegate {
     }
 
     private void createUIComponents() {
-        // TODO: place custom component creation code here
         competitionPanel = new BackgroundPanel();
         Image img = new ImageIcon("resource/picture/ground.jpg").getImage();
         competitionPanel.setImage(img);

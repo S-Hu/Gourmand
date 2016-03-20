@@ -90,8 +90,7 @@ public class Animal implements Eater, Runnable {
      * 嚎叫方法(吃饱/吃完时嚎叫)
      */
     public void cry() {
-        //TODO:bark
-        System.out.println("dog bark");
+        System.out.println("bark");
     }
 
     //吃货任务序列

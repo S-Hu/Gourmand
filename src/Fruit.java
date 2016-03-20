@@ -52,7 +52,6 @@ public abstract class Fruit implements Eatable {
                 eatenAmount = remaining;
             }
             remaining -= eatenAmount;
-            //TODO:make some noise
             return eatenAmount;
         }
         else

@@ -8,6 +8,10 @@ public class BackgroundPanel extends JPanel {
 
     private Image img;
 
+    public BackgroundPanel() {
+        this.setLayout(null);
+    }
+
     public void setImage(Image image) {
         this.img = image;
         repaint();
@@ -16,8 +20,6 @@ public class BackgroundPanel extends JPanel {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        g.drawImage(img, 0, 0, 500, 400, this);
-        System.out.print(this.getWidth());
-        System.out.print(this.getHeight());
+        //g.drawImage(img, 0, 0, 500, 400, this);
     }
 }

@@ -11,7 +11,7 @@ interface Eatable {
     /**
      * @return remaining amount of this eatable.
      */
-    double getRemainingAmount();
+    int getRemainingAmount();
 
     /**
      * @return if this eatable is clear.
@@ -24,7 +24,7 @@ interface Eatable {
      * @param eatenAmount 将要被吃掉的量
      * @return 确实被吃掉的量
      */
-    double beEaten(double eatenAmount);
+    int beEaten(int eatenAmount);
 }
 
 /**
@@ -33,10 +33,10 @@ interface Eatable {
  * @author HuShunxin
  */
 public abstract class Fruit implements Eatable {
-    protected double remaining;
+    protected int remaining;
 
     @Override
-    public double getRemainingAmount() {
+    public int getRemainingAmount() {
         return remaining;
     }
 
@@ -46,7 +46,7 @@ public abstract class Fruit implements Eatable {
     }
 
     @Override
-    public double beEaten(double eatenAmount) {
+    public int beEaten(int eatenAmount) {
         if (eatenAmount > 0) {
             if (remaining < eatenAmount) {
                 eatenAmount = remaining;
@@ -54,7 +54,9 @@ public abstract class Fruit implements Eatable {
             remaining -= eatenAmount;
             //TODO:make some noise
             return eatenAmount;
-        } else return 0;
+        }
+        else
+            return 0;
     }
 }
 
@@ -65,6 +67,6 @@ public abstract class Fruit implements Eatable {
  */
 final class Watermelon extends Fruit {
     public Watermelon() {
-        remaining = 100.0;// + Math.random() * 20;
+        remaining = 5;
     }
 }

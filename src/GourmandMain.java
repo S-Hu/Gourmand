@@ -11,26 +11,40 @@ import java.io.FileNotFoundException;
  * Created by ChenLetian on 3/20/16.
  */
 public class GourmandMain implements AnimalBehaviourDelegate {
+
     private JPanel mainPanel;
     private JButton startButton;
     private JButton resetButton;
     private BackgroundPanel competitionPanel;
 
+    // 西瓜的JLabel
     private JLabel[][] watermelonLabels = new JLabel[8][6];
+    // 动物的JLabel
     private JLabel[] animalLabels = new JLabel[8];
+    // 动物的名字
     private String[] animalNames = {"cow", "donkey", "elephant", "owl", "pig", "rooster", "sheep", "tiger"};
 
+    // 西瓜的图片
     private ImageIcon[] watermelonPics = new ImageIcon[8];
+    // 动物的图片
     private ImageIcon[] animalPics = new ImageIcon[8];
+    // 当前比赛是否已经完成
     private boolean hasCompleteCompetition;
 
+    // 坐标帮助类
     private CoordinateHelper coorHelper = new CoordinateHelper(new Point(54, 16), new Size(420, 380));
 
+    // 背景音乐(吃西瓜)线程
     private Thread bgmThread;
+    // 背景音乐播放器
     private Player bgmPlayer;
 
+    /**
+     * 初始化
+     */
     public GourmandMain() {
 
+        // 初始化西瓜和动物的图片
         Rectangle frame = coorHelper.getCoordinateOfGrid(1, 1);
         for (int i = 1; i <= 8; i++) {
             String imgPath = "resource/picture/watermelon/watermelon" + String.valueOf(i) + ".png";
@@ -41,16 +55,25 @@ public class GourmandMain implements AnimalBehaviourDelegate {
             animalPics[i-1] = img;
         }
 
+        // 重置比赛
         resetGame();
+
+        // 为按钮增加监听器
         resetButton.addActionListener(e -> resetGame());
         startButton.addActionListener(e -> startGame());
     }
 
-    public void resetGame() {
+    /**
+     * 重置游戏
+     */
+    private void resetGame() {
+        // 重置游戏
         hasCompleteCompetition = false;
+        // 重置界面
         SwingUtilities.invokeLater(() -> {
+            // 移除原有JLabel
             competitionPanel.removeAll();
-
+            // 添加watermelon的JLabel
             for (int row = 1; row <= 8; row++) {
                 for (int column = 1; column <= 6; column++) {
                     Rectangle frame = coorHelper.getCoordinateOfGrid(row, column);
@@ -61,6 +84,7 @@ public class GourmandMain implements AnimalBehaviourDelegate {
                     watermelonLabels[row - 1][column - 1] = label;
                 }
             }
+            // 添加动物的JLable
             for (int animal = 1; animal <= 8; animal++) {
                 Rectangle frame = coorHelper.getCoordinateOfGrid(animal, 0);
                 JLabel label = new JLabel(animalPics[animal - 1]);
@@ -69,17 +93,22 @@ public class GourmandMain implements AnimalBehaviourDelegate {
                 animalLabels[animal - 1] = label;
                 competitionPanel.add(label);
             }
-
+            // 添加背景图
             ImageIcon backgroundImage = new ImageIcon("resource/picture/ground.jpg");
             JLabel background = new JLabel(backgroundImage);
             background.setLocation(0, 0);
             background.setSize(500, 400);
             competitionPanel.add(background);
+
             competitionPanel.repaint();
         });
     }
 
+    /**
+     * 开始游戏
+     */
     public void startGame() {
+        // 开启8只动物吃西瓜的进程
         for (int i = 0; i < 8; i++) {
             Watermelon[] toEats = {new Watermelon(0), new Watermelon(1), new Watermelon(2), new Watermelon(3), new Watermelon(4), new Watermelon(5)};
             Animal animal = new Animal(toEats, i, this);
@@ -87,6 +116,7 @@ public class GourmandMain implements AnimalBehaviourDelegate {
                 animal.run();
             }).start();
         }
+        // 开启背景音乐(吃西瓜的声音)的线程,并重复播放,直到hasCompleteCompetition为true
         bgmThread = new Thread(() -> {
             while (!hasCompleteCompetition) {
                 try {
@@ -104,6 +134,7 @@ public class GourmandMain implements AnimalBehaviourDelegate {
         bgmThread.start();
     }
 
+    // 吃了一口代理方法
     @Override
     public void didEatABite(Animal animal, Fruit eaten, int remainingAmount) {
         SwingUtilities.invokeLater(() -> {
@@ -111,6 +142,7 @@ public class GourmandMain implements AnimalBehaviourDelegate {
         });
     }
 
+    // 吃完了一个水果代理方法
     @Override
     public void didEatAFruit(Animal animal, Fruit eaten) {
         SwingUtilities.invokeLater(() -> {
@@ -120,6 +152,7 @@ public class GourmandMain implements AnimalBehaviourDelegate {
         });
     }
 
+    // 完成了比赛的代理方法
     @Override
     public void didEndCompetition(Animal animal) {
         hasCompleteCompetition = true;
@@ -147,7 +180,5 @@ public class GourmandMain implements AnimalBehaviourDelegate {
 
     private void createUIComponents() {
         competitionPanel = new BackgroundPanel();
-        Image img = new ImageIcon("resource/picture/ground.jpg").getImage();
-        competitionPanel.setImage(img);
     }
 }

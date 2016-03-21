@@ -102,9 +102,20 @@ public class Animal implements Eater, Runnable {
         this.toEats = toEats;
     }
 
+    //这个动物的tag
     public int tag;
+    //动物行为事件的代理
     public AnimalBehaviourDelegate delegate;
 
+    /**
+     * 提供各项参数的初始化
+     * @param stomach 胃
+     * @param eatingSpeed 吃的速度
+     * @param amountPerBite 每口的大小
+     * @param toEats 需要吃的目标
+     * @param tag 动物的tag
+     * @param delegate 动物行为事件的代理
+     */
     public Animal(Stomach stomach, int eatingSpeed, int amountPerBite, Eatable[] toEats, int tag, AnimalBehaviourDelegate delegate) {
         this.stomach = stomach;
         this.eatingSpeed = eatingSpeed;
@@ -114,6 +125,12 @@ public class Animal implements Eater, Runnable {
         this.delegate = delegate;
     }
 
+    /**
+     * 较简单的初始化,吃的速度,每口的大小是随机的,其中速度为750ms-1250ms每次,每口大小为1-2单位每口
+     * @param toEats 需要吃的目标
+     * @param tag 动物的tag
+     * @param delegate 动物行为事件的代理
+     */
     public Animal(Eatable[] toEats, int tag, AnimalBehaviourDelegate delegate) {
         amountPerBite = 1 + (int) (Math.random() * 2);
         eatingSpeed = 1000 + (int) (Math.random() - 0.5) * 500;
@@ -123,6 +140,9 @@ public class Animal implements Eater, Runnable {
         this.delegate = delegate;
     }
 
+    /**
+     * 动物开始吃
+     */
     //线程相关
     @Override
     public void run() {
@@ -135,17 +155,22 @@ public class Animal implements Eater, Runnable {
                 }
                 int amount = this.takeABite(toEat);
                 if (toEat.isClear())
-                    delegate.didEatAFruit(this,(Fruit) toEat);
+                    delegate.didEatAFruit(this,(Fruit) toEat); // 告诉代理吃完了一个水果
                 else
-                    delegate.didEatABite(this,(Fruit) toEat, toEat.getRemainingAmount());
+                    delegate.didEatABite(this,(Fruit) toEat, toEat.getRemainingAmount()); // 告诉代理吃了一口水果
             }
         }
         //叫一声
         this.cry();
-        this.delegate.didEndCompetition(this);
+        this.delegate.didEndCompetition(this); // 告诉代理完成比赛了
         Thread.currentThread().interrupt();
     }
 
+    /**
+     * 动物吃一口目标
+     * @param toEat 被吃的对象
+     * @return 实际吃的量
+     */
     @Override
     public int takeABite(Eatable toEat) {
         //要吃多少
@@ -160,6 +185,10 @@ public class Animal implements Eater, Runnable {
         return this.stomach.fill(realEatAmount);
     }
 
+    /**
+     * 是否饱了
+     * @return 是否饱了
+     */
     @Override
     public boolean isFull() {
         return this.stomach.getEmpty() == 0;

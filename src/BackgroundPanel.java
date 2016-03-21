@@ -4,22 +4,14 @@ import java.awt.*;
 /**
  * Created by ChenLetian on 3/20/16.
  */
-public class BackgroundPanel extends JPanel {
 
-    private Image img;
+/**
+ * 要加背景等组件的JPanel
+ */
+public class BackgroundPanel extends JPanel {
 
     public BackgroundPanel() {
         this.setLayout(null);
     }
 
-    public void setImage(Image image) {
-        this.img = image;
-        repaint();
-    }
-
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-        //g.drawImage(img, 0, 0, 500, 400, this);
-    }
 }

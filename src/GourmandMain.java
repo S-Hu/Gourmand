@@ -1,11 +1,11 @@
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.Player;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-
-import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.Player;
 
 /**
  * Created by ChenLetian on 3/20/16.
@@ -22,8 +22,12 @@ public class GourmandMain implements AnimalBehaviourDelegate {
 
     private ImageIcon[] watermelonPics = new ImageIcon[8];
     private ImageIcon[] animalPics = new ImageIcon[8];
+    private boolean hasCompleteCompetition;
 
     private CoordinateHelper coorHelper = new CoordinateHelper(new Point(54, 16), new Size(420, 380));
+
+    private Thread bgmThread;
+    private Player bgmPlayer;
 
     public GourmandMain() {
 
@@ -43,6 +47,7 @@ public class GourmandMain implements AnimalBehaviourDelegate {
     }
 
     public void resetGame() {
+        hasCompleteCompetition = false;
         SwingUtilities.invokeLater(() -> {
             competitionPanel.removeAll();
 
@@ -82,19 +87,21 @@ public class GourmandMain implements AnimalBehaviourDelegate {
                 animal.run();
             }).start();
         }
-        new Thread(() -> {
-            while (true) {
+        bgmThread = new Thread(() -> {
+            while (!hasCompleteCompetition) {
                 try {
                     BufferedInputStream buffer = new BufferedInputStream(new FileInputStream("resource/sound/eating.mp3"));
                     Player player = new Player(buffer);
                     player.play();
+                    bgmPlayer = player;
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (JavaLayerException e) {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
+        bgmThread.start();
     }
 
     @Override
@@ -115,7 +122,8 @@ public class GourmandMain implements AnimalBehaviourDelegate {
 
     @Override
     public void didEndCompetition(Animal animal) {
-        SwingUtilities.invokeLater(() -> {
+        hasCompleteCompetition = true;
+        new Thread(() -> {
             try {
                 BufferedInputStream buffer = new BufferedInputStream(new FileInputStream("resource/sound/" + animalNames[animal.tag] + ".mp3"));
                 Player player = new Player(buffer);
@@ -125,7 +133,7 @@ public class GourmandMain implements AnimalBehaviourDelegate {
             } catch (JavaLayerException e) {
                 e.printStackTrace();
             }
-        });
+        }).start();
     }
 
     public static void main(String[] args) {

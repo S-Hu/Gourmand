@@ -21,6 +21,8 @@ public class GourmandMain implements AnimalBehaviourDelegate {
     private JLabel[][] watermelonLabels = new JLabel[8][6];
     // 动物的JLabel
     private JLabel[] animalLabels = new JLabel[8];
+    // 奖杯的JLabel
+    private JLabel trophyLabel;
     // 动物的名字
     private String[] animalNames = {"cow", "donkey", "elephant", "owl", "pig", "rooster", "sheep", "tiger"};
 
@@ -30,7 +32,11 @@ public class GourmandMain implements AnimalBehaviourDelegate {
     private ImageIcon[] animalPics = new ImageIcon[8];
     // 当前比赛是否已经完成
     private boolean hasCompleteCompetition;
+    // 当前已经完成比赛的动物数
     private int hasCompleteCount;
+    // 获得胜利的动物
+    private JLabel winnedAnimalLabel;
+    private int winnedAnimalTag;
 
     // 坐标帮助类
     private CoordinateHelper coorHelper = new CoordinateHelper(new Point(54, 16), new Size(420, 380));
@@ -70,11 +76,18 @@ public class GourmandMain implements AnimalBehaviourDelegate {
     private void resetGame() {
         // 重置游戏
         hasCompleteCompetition = false;
+        startButton.setEnabled(true);
         hasCompleteCount = 0;
         // 重置界面
         SwingUtilities.invokeLater(() -> {
             // 移除原有JLabel
             competitionPanel.removeAll();
+            // 添加备用的奖状图
+            ImageIcon img = new ImageIcon("resource/picture/trophy.png");
+            trophyLabel = new JLabel(img);
+            trophyLabel.setBounds(150, 100, 200, 200);
+            trophyLabel.setVisible(false);
+            competitionPanel.add(trophyLabel);
             // 添加watermelon的JLabel
             for (int row = 1; row <= 8; row++) {
                 for (int column = 1; column <= 6; column++) {
@@ -159,9 +172,33 @@ public class GourmandMain implements AnimalBehaviourDelegate {
     @Override
     public void didEndCompetition(Animal animal) {
         hasCompleteCompetition = true;
+        setupMP3WithFileURL("resource/sound/" + animalNames[animal.tag] + ".mp3");
+        hasCompleteCount++;
+        if (hasCompleteCount == 8) {
+            competitionAllEnd();
+        }
+        if (hasCompleteCount == 1) {
+            winnedAnimalLabel = animalLabels[animal.tag];
+            winnedAnimalTag = animal.tag;
+        }
+    }
+
+    // 所有动物都完成了比赛
+    public void competitionAllEnd() {
+        resetButton.setEnabled(true);
+        startButton.setEnabled(false);
+        trophyLabel.setVisible(true);
+        winnedAnimalLabel.setSize(70, 70);
+        winnedAnimalLabel.setIcon(new ImageIcon(animalPics[winnedAnimalTag].getImage().getScaledInstance(70, 70, Image.SCALE_SMOOTH)));
+        winnedAnimalLabel.setLocation(250 - 35, 170 - 35);
+        setupMP3WithFileURL("resource/sound/" + animalNames[winnedAnimalTag] + ".mp3");
+    }
+
+    // 启动音频
+    private void setupMP3WithFileURL(String url) {
         new Thread(() -> {
             try {
-                BufferedInputStream buffer = new BufferedInputStream(new FileInputStream("resource/sound/" + animalNames[animal.tag] + ".mp3"));
+                BufferedInputStream buffer = new BufferedInputStream(new FileInputStream(url));
                 Player player = new Player(buffer);
                 player.play();
             } catch (FileNotFoundException e) {
@@ -170,26 +207,15 @@ public class GourmandMain implements AnimalBehaviourDelegate {
                 e.printStackTrace();
             }
         }).start();
-        hasCompleteCount++;
-        if (hasCompleteCount == 8) {
-            competitionAllEnd();
-        }
-    }
-
-    public void competitionAllEnd() {
-        resetButton.setEnabled(true);
-
-
     }
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("GourmandMain");
+        JFrame frame = new JFrame("吃西瓜大赛");
         frame.setContentPane(new GourmandMain().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
         frame.setResizable(false);
-        frame.setTitle("吃西瓜大赛");
     }
 
     private void createUIComponents() {

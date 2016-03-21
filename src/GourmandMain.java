@@ -148,6 +148,7 @@ public class GourmandMain implements AnimalBehaviourDelegate {
         });
         bgmThread.start();
         resetButton.setEnabled(false);
+        startButton.setEnabled(false);
     }
 
     // 吃了一口代理方法

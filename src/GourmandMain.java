@@ -30,6 +30,7 @@ public class GourmandMain implements AnimalBehaviourDelegate {
     private ImageIcon[] animalPics = new ImageIcon[8];
     // 当前比赛是否已经完成
     private boolean hasCompleteCompetition;
+    private int hasCompleteCount;
 
     // 坐标帮助类
     private CoordinateHelper coorHelper = new CoordinateHelper(new Point(54, 16), new Size(420, 380));
@@ -69,6 +70,7 @@ public class GourmandMain implements AnimalBehaviourDelegate {
     private void resetGame() {
         // 重置游戏
         hasCompleteCompetition = false;
+        hasCompleteCount = 0;
         // 重置界面
         SwingUtilities.invokeLater(() -> {
             // 移除原有JLabel
@@ -132,6 +134,7 @@ public class GourmandMain implements AnimalBehaviourDelegate {
             }
         });
         bgmThread.start();
+        resetButton.setEnabled(false);
     }
 
     // 吃了一口代理方法
@@ -152,7 +155,7 @@ public class GourmandMain implements AnimalBehaviourDelegate {
         });
     }
 
-    // 完成了比赛的代理方法
+    // 某个动物完成了比赛的代理方法
     @Override
     public void didEndCompetition(Animal animal) {
         hasCompleteCompetition = true;
@@ -167,6 +170,16 @@ public class GourmandMain implements AnimalBehaviourDelegate {
                 e.printStackTrace();
             }
         }).start();
+        hasCompleteCount++;
+        if (hasCompleteCount == 8) {
+            competitionAllEnd();
+        }
+    }
+
+    public void competitionAllEnd() {
+        resetButton.setEnabled(true);
+
+
     }
 
     public static void main(String[] args) {
@@ -176,6 +189,7 @@ public class GourmandMain implements AnimalBehaviourDelegate {
         frame.pack();
         frame.setVisible(true);
         frame.setResizable(false);
+        frame.setTitle("吃西瓜大赛");
     }
 
     private void createUIComponents() {

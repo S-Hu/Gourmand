@@ -1,6 +1,10 @@
 /**
  * Created by ChenLetian on 3/20/16.
  */
+
+/**
+ * 尺寸类
+ */
 public class Size {
 
     public int width;

@@ -1,6 +1,10 @@
 /**
  * Created by ChenLetian on 3/20/16.
  */
+
+/**
+ * 矩形类
+ */
 public class Rectangle {
 
     public Point origin;
